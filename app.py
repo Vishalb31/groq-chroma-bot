@@ -2,7 +2,7 @@ import os
 import streamlit as st
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_chroma import Chroma
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
@@ -14,12 +14,13 @@ load_dotenv()
 groq_api_key = os.getenv("GROQ_API_KEY")
 
 st.title("💬 Normal AI Chatbot (+ ChromaDB)")
-st.write(".")
+st.write("A conversational assistant powered by Groq, with vector memory capability.")
 
-# 2. Initialize Chroma Database with some default knowledge
+# 2. Initialize Chroma Database with Google API Embeddings
 @st.cache_resource
 def setup_vector_db():
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    # Utilizing Google's lightweight cloud embedding model to prevent memory leaks
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
     
     # Custom vector data
     docs = [
@@ -35,7 +36,7 @@ vector_db = setup_vector_db()
 retriever = vector_db.as_retriever(search_kwargs={"k": 2})
 
 # 3. Setup Groq LLM
-llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama-3.1-8b-instant")
+llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama3-8b-8192")
 
 # 4. A much more natural, conversational prompt
 prompt = ChatPromptTemplate.from_template(
