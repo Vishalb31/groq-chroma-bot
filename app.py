@@ -12,15 +12,19 @@ from langchain_core.documents import Document
 # 1. Load Environment Variables
 load_dotenv()
 groq_api_key = os.getenv("GROQ_API_KEY")
+google_api_key = os.getenv("GOOGLE_API_KEY")  # Explicitly fetch the Google API Key
 
 st.title("💬 Normal AI Chatbot (+ ChromaDB)")
 st.write("A conversational assistant powered by Groq, with vector memory capability.")
 
 # 2. Initialize Chroma Database with Google API Embeddings
 @st.cache_resource
-def setup_vector_db():
-    # Utilizing Google's lightweight cloud embedding model to prevent memory leaks
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
+def setup_vector_db(api_key):
+    # Pass the api_key directly to bypass Pydantic validation issues
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model="models/text-embedding-004", 
+        google_api_key=api_key
+    )
     
     # Custom vector data
     docs = [
@@ -32,7 +36,8 @@ def setup_vector_db():
     vector_db = Chroma.from_documents(docs, embeddings)
     return vector_db
 
-vector_db = setup_vector_db()
+# Pass the key into the setup function
+vector_db = setup_vector_db(google_api_key)
 retriever = vector_db.as_retriever(search_kwargs={"k": 2})
 
 # 3. Setup Groq LLM
