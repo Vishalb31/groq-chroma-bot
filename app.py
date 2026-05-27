@@ -22,7 +22,7 @@ st.write("A conversational assistant powered by Groq, with vector memory capabil
 def setup_vector_db(api_key):
     # Pass the api_key directly to bypass Pydantic validation issues
     embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/text-embedding-004", 
+        model="models/gemini-embedding-001", 
         google_api_key=api_key
     )
     
