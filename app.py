@@ -36,7 +36,7 @@ vector_db = setup_vector_db()
 retriever = vector_db.as_retriever(search_kwargs={"k": 2})
 
 # 3. Setup Groq LLM
-llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama3-8b-8192")
+llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama-3.1-8b-instant")
 
 # 4. A much more natural, conversational prompt
 prompt = ChatPromptTemplate.from_template(
